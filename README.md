@@ -12,6 +12,7 @@
 - VS Code with TypeScript and ESLint extensions.
 - For optional e2e Playwright browsers tests, run: pnpm --filter @fleetops/e2e i && npx playwright install
 - Or you can always run later: npx playwright install
+- GitHub-CLI (install from https://cli.github.com/ or using 'winget install -e --id GitHub.cli')
 
 ### **Setup on Windows (using PowerShell, run as administartor)**
 1. install required elements by:

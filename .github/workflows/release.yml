@@ -1,0 +1,72 @@
+# .github/workflows/release.yml
+name: Release
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: |
+            - recursive: true
+              args: [--frozen-lockfile]
+
+      - name: Build web app
+        run: pnpm --filter @fleetops/web build
+
+      - name: Archive dist
+        run: |
+          zip -r web-dist-${GITHUB_REF_NAME}.zip apps/web/dist
+
+      - name: Create or update release and upload artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          # create release if it does not exist yet
+          gh release view "$tag" >/dev/null 2>&1 || gh release create "$tag" --notes-from-tag --latest --verify-tag
+          # upload the zipped web build
+          gh release upload "$tag" "web-dist-${GITHUB_REF_NAME}.zip" --clobber
+
+
+  # release:
+    # runs-on: ubuntu-latest
+    # steps:
+      # - uses: actions/checkout@v4
+        # with:
+          # fetch-depth: 0  # ensure the tag and history are present
+
+      # # gh is preinstalled on GitHub-hosted runners
+      # # authenticate gh with the workflow token
+      # - name: Create GitHub Release
+        # env:
+          # GH_TOKEN: ${{ github.token }}
+        # run: |
+          # tag="${GITHUB_REF_NAME}"
+
+          # # Option A - auto-generate notes from commits and PRs
+          # gh release create "$tag" --generate-notes --latest --verify-tag
+
+          # # Option B - OR use your annotated tag message as notes
+          # # gh release create "$tag" --notes-from-tag --latest --verify-tag
+
+          # # Optional: upload build artifacts if you produce any
+          # # gh release upload "$tag" dist/** --clobber
