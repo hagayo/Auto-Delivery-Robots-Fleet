@@ -1,0 +1,15 @@
+{
+  "name": "@fleetops/e2e",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "typecheck": "echo \"no typecheck for e2e in cycle 0\"",
+    "lint": "echo \"no lint for e2e in cycle 0\"",
+    "build": "echo \"no build for e2e in cycle 0\""
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.47.2"
+  }
+}

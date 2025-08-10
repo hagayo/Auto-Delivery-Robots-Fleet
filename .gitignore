@@ -1,0 +1,24 @@
+# deps
+node_modules/
+pnpm-lock.yaml
+
+# builds
+dist/
+build/
+.vite/
+coverage/
+playwright-report/
+test-results/
+
+# env
+.env
+.env.*
+!.env.example
+
+# editor
+.DS_Store
+.idea/
+.vscode/
+
+# misc
+*.log
