@@ -6,11 +6,7 @@ export function RobotsTable({ robots }: { robots: Robot[] }) {
     <table aria-label="robots">
       <thead>
         <tr>
-          <th>Robot ID</th>
-          <th>Status</th>
-          <th>Mission</th>
-          <th>Battery</th>
-          <th>Updated</th>
+          <th>Robot ID</th><th>Status</th><th>Mission</th><th>Battery</th><th>Updated</th>
         </tr>
       </thead>
       <tbody>

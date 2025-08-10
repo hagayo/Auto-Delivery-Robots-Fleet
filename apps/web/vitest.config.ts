@@ -1,2 +1,10 @@
-import base from '../../test-config/vitest.config.base';
-export default base;
+/// <reference types="vitest" />
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./vitest.setup.ts']
+  }
+});
