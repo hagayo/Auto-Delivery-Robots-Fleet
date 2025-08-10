@@ -3,6 +3,10 @@
   "compilerOptions": {
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    "baseUrl": ".",
+    "paths": {
+      "@fleetops/sim-engine": ["../../packages/sim-engine/src/index.ts"]
+    },
     "rootDir": ".",
     "noEmit": true,
     "types": ["node", "vitest/globals"],

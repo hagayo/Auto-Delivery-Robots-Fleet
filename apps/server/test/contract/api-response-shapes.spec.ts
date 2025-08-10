@@ -1,13 +1,13 @@
 /// <reference types="vitest" />
 
-import Ajv from 'ajv';
-import addFormats from 'ajv-formats';
-
 import {
   RobotsSnapshot,
   RobotUpdatedEvent,
   AnySseEvent
 } from '@fleetops/sim-engine';
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
+
 
 const ajv = new Ajv.default({ strict: true, allErrors: true });
 addFormats.default(ajv);

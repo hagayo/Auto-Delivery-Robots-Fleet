@@ -1,5 +1,5 @@
-/// <reference types="vitest" />
 import { describe, it, expect } from 'vitest';
+
 import { FakeClock, WallClock } from '../../clock.ts';
 
 describe('FakeClock behavior', () => {

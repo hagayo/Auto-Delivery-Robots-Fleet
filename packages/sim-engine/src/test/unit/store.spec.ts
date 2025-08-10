@@ -1,5 +1,5 @@
-/// <reference types="vitest" />
 import { describe, it, expect } from 'vitest';
+
 import { EngineStore } from '../../store.ts';
 
 describe('store API shape', () => {

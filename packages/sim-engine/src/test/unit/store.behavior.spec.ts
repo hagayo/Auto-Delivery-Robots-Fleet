@@ -1,12 +1,13 @@
-/// <reference types="vitest" />
 import { describe, it, expect } from 'vitest';
+
+import type { StoreEvent } from '../../store.ts';
 import { EngineStore } from '../../store.ts';
 import type { TRobot, TMission } from '../../types.ts';
 
 describe('EngineStore behavior', () => {
   it('upserts and removes robots and missions, emitting events', () => {
     const s = new EngineStore();
-    const events: any[] = [];
+    const events: StoreEvent[] = [];
     s.subscribe((e) => events.push(e));
 
     const r: TRobot = { id: 'R-1', status: 'idle', missionId: null, batteryPct: 100, lastUpdated: 0 };

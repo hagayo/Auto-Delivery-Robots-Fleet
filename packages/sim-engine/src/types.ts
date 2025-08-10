@@ -4,8 +4,7 @@ import { Type, Static } from '@sinclair/typebox';
 
 /** - JSON Schema meta is 2020-12 - */
 export const RobotStatus = Type.Union(
-  [Type.Literal('idle'), Type.Literal('assigned'), Type.Literal('en_route'), Type.Literal('delivering'), Type.Literal('completed')],
-  { $id: `${SCHEMA_BASE}/RobotStatus` }
+  [Type.Literal('idle'), Type.Literal('assigned'), Type.Literal('en_route'), Type.Literal('delivering'), Type.Literal('completed')]
 );
 
 export type TRobotStatus = Static<typeof RobotStatus>;
@@ -20,15 +19,13 @@ export const MissionState = Type.Union(
     Type.Literal('completed'),
     Type.Literal('aborting'),
     Type.Literal('canceled')
-  ],
-  { $id: `${SCHEMA_BASE}/MissionState` }
+  ]
 );
 
 export type TMissionState = Static<typeof MissionState>;
 
 export const MissionTimelineEntry = Type.Object(
-  { state: MissionState, at: Type.Number({ description: 'epoch millis' }) },
-  { $id: `${SCHEMA_BASE}/MissionTimelineEntry` }
+  { state: MissionState, at: Type.Number({ description: 'epoch millis' }) }
 );
 export type TMissionTimelineEntry = Static<typeof MissionTimelineEntry>;
 
@@ -39,8 +36,7 @@ export const Robot = Type.Object(
     missionId: Type.Union([Type.String(), Type.Null()]),
     batteryPct: Type.Integer({ minimum: 0, maximum: 100 }),
     lastUpdated: Type.Number({ description: 'epoch millis' })
-  },
-  { $id: `${SCHEMA_BASE}/Robot` }
+  }
 );
 export type TRobot = Static<typeof Robot>;
 
@@ -52,8 +48,7 @@ export const Mission = Type.Object(
     createdAt: Type.Number(),
     timeline: Type.Array(MissionTimelineEntry),
     cancelReason: Type.Union([Type.Literal('operator'), Type.Null()], { default: null })
-  },
-  { $id: `${SCHEMA_BASE}/Mission` }
+  }
 );
 export type TMission = Static<typeof Mission>;
 

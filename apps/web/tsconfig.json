@@ -4,7 +4,7 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "rootDir": ".",
-    "types": ["node", "vitest"]
+    "types": ["vite/client", "node", "vitest"]
   },
-  "include": ["src", "tests", "vite.config.ts"]
+  "include": ["src", "src/env.d.ts", "vite.config.ts", "tests"]
 }
