@@ -2,15 +2,17 @@
   "name": "fleetops-dashboard",
   "private": true,
   "version": "0.0.1",
-  "pnpm": { 
-    "onlyBuiltDependencies": ["esbuild"] 
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   },
   "engines": {
     "node": ">=22.18.0",
     "pnpm": ">=9.0.0"
   },
   "scripts": {
-    "prepare": "husky install",
+    "prepare": "husky",
     "typecheck": "pnpm -r --stream typecheck",
     "lint": "pnpm -r --stream lint",
     "format": "prettier -w .",

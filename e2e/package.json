@@ -10,6 +10,6 @@
     "build": "echo \"no build for e2e in cycle 0\""
   },
   "devDependencies": {
-    "@playwright/test": "^1.47.2"
+    "@playwright/test": "^1.54.2"
   }
 }

@@ -1,8 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src"
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "rootDir": ".",
+    "types": ["node", "vitest"]
   },
-  "include": ["src", "vite-env.d.ts", "tests", "vite.config.ts"]
+  "include": ["src", "tests", "vite.config.ts"]
 }

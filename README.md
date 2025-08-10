@@ -5,6 +5,7 @@
 - Node 22.x+ LTS
 - pnpm 9+ via Corepack
 - Git
+
 **Nice to have:**
 - VS Code with TypeScript and ESLint extensions.
 - For optional e2e Playwright browsers tests, run: pnpm --filter @fleetops/e2e i && npx playwright install

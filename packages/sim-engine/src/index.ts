@@ -1,2 +1,6 @@
-// placeholder exports to satisfy build in Cycle 0
-export const version = '0.0.1';
+export * from './types.js';
+export * from './clock.js';
+export * from './store.js';
+
+// keep version for smoke checks
+export const version = '0.0.2';
