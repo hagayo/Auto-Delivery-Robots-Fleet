@@ -52,10 +52,10 @@ git --version
 - open powershell and run: 
 pnpm --filter @fleetops/server dev
 
-- Fastify listens on http://127.0.0.1:3000 by default. To expose on LAN, bind to 0.0.0.0 in your server config. 
+Note: Fastify listens on http://127.0.0.1:3000 by default. To expose on LAN, bind to 0.0.0.0 in your server config. 
 
 ### B. Start the web app
-- open powershell and run: 
+- open another powershell window and run: 
 $env:VITE_API_BASE="http://localhost:3000"
 pnpm --filter @fleetops/web dev
 
