@@ -1,8 +1,3 @@
-
----
-
-# קובץ: `server/Makefile`
-```make
 .PHONY: print-unit-ncc print-unit-sea
 
 print-unit-ncc:
