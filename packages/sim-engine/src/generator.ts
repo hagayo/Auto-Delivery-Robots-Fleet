@@ -5,7 +5,7 @@
 import { pickNextRobot } from './assignment.js';
 import type { Clock } from './clock.js';
 import { evolveMission, toRobotStatus } from './stateMachine.js';
-import type { Store } from './store.js';
+import type { EngineStore } from './store.js';
 import type { TMission, TRobot } from './types.js';
 
 export interface GeneratorOptions {
@@ -15,7 +15,7 @@ export interface GeneratorOptions {
 
 export class MissionGenerator {
   private readonly clock: Clock;
-  private readonly store: Store;
+  private readonly store: EngineStore;
   private readonly periodMs: number;
   private readonly idPrefix: string;
   private unsub: (() => void) | null = null;
@@ -23,7 +23,7 @@ export class MissionGenerator {
   private seq = 1;
   private queue: TMission[] = [];
 
-  constructor(clock: Clock, store: Store, opts: GeneratorOptions = {}) {
+  constructor(clock: Clock, store: EngineStore, opts: GeneratorOptions = {}) {
     this.clock = clock;
     this.store = store;
     const rate = Math.max(0.0001, opts.ratePerMinute ?? 2);
@@ -75,7 +75,7 @@ export class MissionGenerator {
   private tryAssign(now: number): void {
     if (this.queue.length === 0) return;
 
-    const idle = this.store.getRobots().filter(r => r.status === 'idle' && r.missionId === null);
+    const idle = this.store.getRobots().filter((r: TRobot) => r.status === 'idle' && r.missionId === null);
     if (idle.length === 0) return;
 
     // assign oldest-queued mission to oldest-idle robot

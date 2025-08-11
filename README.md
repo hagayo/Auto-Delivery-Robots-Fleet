@@ -44,6 +44,31 @@ git --version
 - `pnpm -w test`
 - `pnpm --filter @fleetops/web build`
 
+
+## Local Dashboard Run:
+1) Open 2 PowerShell windows at your repo root.
+
+### A. Start the API server
+- open powershell and run: 
+pnpm --filter @fleetops/server dev
+
+- Fastify listens on http://127.0.0.1:3000 by default. To expose on LAN, bind to 0.0.0.0 in your server config. 
+
+### B. Start the web app
+- open powershell and run: 
+$env:VITE_API_BASE="http://localhost:3000"
+pnpm --filter @fleetops/web dev
+
+- Open http://localhost:5173 in the browser. (This is Vite’s dev server)
+
+- Optional prod-like check:
+Run in powershell: 
+pnpm --filter @fleetops/web build
+pnpm --filter @fleetops/web preview -- --host --port 5173
+
+NOTE: vite preview serves the built dist locally. Not for production use.
+
+
 ## AWS Services (production usage)
 - Frontend: S3 static hosting behind CloudFront.
 - Auth: Amazon Cognito user pool for operators.

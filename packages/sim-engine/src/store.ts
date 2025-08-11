@@ -1,95 +1,71 @@
-/**
- * In-memory store for robots, missions, and metrics with event emission.
- */
-import type { TRobot, TMission, TMetrics } from './types.js';
+﻿// Store slice additions to support cancel flow.
+// If you already have a store, this will overwrite - a .bak is created first.
+import type { TMission, TRobot } from './types.js';
+import { cancelMission } from './stateMachine.js';
 
 export type StoreEvent =
   | { entity: 'robot'; type: 'upsert' | 'remove'; data: TRobot }
-  | { entity: 'mission'; type: 'upsert' | 'remove'; data: TMission }
-  | { entity: 'metrics'; type: 'snapshot'; data: TMetrics };
+  | { entity: 'mission'; type: 'upsert' | 'remove'; data: TMission };
 
 export type Unsubscribe = () => void;
 
-export interface Store {
-  // Reads
-  getRobot(id: string): TRobot | undefined;
-  getRobots(): TRobot[];
-  getMission(id: string): TMission | undefined;
-  getMissions(): TMission[];
-
-  // Writes
-  applyRobot(robot: TRobot): void;
-  applyMission(mission: TMission): void;
-  removeRobot(id: string): void;
-  removeMission(id: string): void;
-  clear(): void;
-
-  // Events
-  subscribe(cb: (evt: StoreEvent) => void): Unsubscribe;
-}
-
-export class EngineStore implements Store {
+export class EngineStore {
   private robots = new Map<string, TRobot>();
   private missions = new Map<string, TMission>();
-  private listeners = new Set<(evt: StoreEvent) => void>();
+  private listeners = new Set<(e: StoreEvent) => void>();
 
-  constructor() {}
+  getRobot(id: string) { return this.robots.get(id); }
+  getMission(id: string) { return this.missions.get(id); }
 
-  // Reads
-  getRobot(id: string): TRobot | undefined {
-    return this.robots.get(id);
-  }
-
-  getRobots(): TRobot[] {
-    return Array.from(this.robots.values());
-  }
-
-  getMission(id: string): TMission | undefined {
-    return this.missions.get(id);
-  }
-
-  getMissions(): TMission[] {
-    return Array.from(this.missions.values());
-  }
-
-  // Writes
-  applyRobot(robot: TRobot): void {
-    this.robots.set(robot.id, robot);
-    this.emit({ entity: 'robot', type: 'upsert', data: robot });
-  }
-
-  applyMission(mission: TMission): void {
-    this.missions.set(mission.id, mission);
-    this.emit({ entity: 'mission', type: 'upsert', data: mission });
-  }
-
-  removeRobot(id: string): void {
-    const existing = this.robots.get(id);
-    if (!existing) return;
+  removeRobot(id: string) {
+    const r = this.robots.get(id);
+    if (!r) return;
     this.robots.delete(id);
-    this.emit({ entity: 'robot', type: 'remove', data: existing });
+    this.emit({ entity: 'robot', type: 'remove', data: r });
   }
 
-  removeMission(id: string): void {
-    const existing = this.missions.get(id);
-    if (!existing) return;
+  removeMission(id: string) {
+    const m = this.missions.get(id);
+    if (!m) return;
     this.missions.delete(id);
-    this.emit({ entity: 'mission', type: 'remove', data: existing });
+    this.emit({ entity: 'mission', type: 'remove', data: m });
   }
 
-  clear(): void {
+  /** Clear all in-memory data */
+  clear() {
     this.robots.clear();
     this.missions.clear();
-    // clearing is silent by design - callers can stream snapshots if needed
   }
 
-  // Events
-  subscribe(cb: (evt: StoreEvent) => void): Unsubscribe {
+  subscribe(cb: (e: StoreEvent) => void): Unsubscribe {
     this.listeners.add(cb);
     return () => this.listeners.delete(cb);
   }
+  private emit(e: StoreEvent) {
+    for (const l of this.listeners) l(e);
+  }
 
-  private emit(evt: StoreEvent): void {
-    for (const l of this.listeners) l(evt);
+  // Robots
+  getRobots(): TRobot[] { return [...this.robots.values()]; }
+  applyRobot(r: TRobot) {
+    this.robots.set(r.id, r);
+    this.emit({ entity: 'robot', type: 'upsert', data: r });
+  }
+
+  // Missions
+  getMissions(): TMission[] { return [...this.missions.values()]; }
+  getMissionById(id: string): TMission | undefined { return this.missions.get(id); }
+  applyMission(m: TMission) {
+    this.missions.set(m.id, m);
+    this.emit({ entity: 'mission', type: 'upsert', data: m });
+  }
+
+  /** Cancel mission by id and emit event - no-op if not found */
+  cancelMissionById(id: string, now: number): TMission | undefined {
+    const cur = this.missions.get(id);
+    if (!cur) return undefined;
+    const next = cancelMission(cur, now);
+    if (next !== cur) this.applyMission(next);
+    return next;
   }
 }

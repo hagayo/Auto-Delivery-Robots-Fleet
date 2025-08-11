@@ -1,0 +1,89 @@
+﻿import type { TMission } from './types.js';
+
+export function isTerminal(state: TMission['state']): boolean {
+  return state === 'completed' || state === 'canceled' || state === 'aborting';
+}
+
+function appendTimeline(m: TMission, entry: TMission['timeline'][number]): TMission {
+  return { ...m, timeline: [...m.timeline, entry] };
+}
+
+export type MissionEvent =
+  | { type: 'assign' }
+  | { type: 'progress' }
+  | { type: 'complete' }
+  | { type: 'cancel' };
+
+export function cancelMission(m: TMission, now: number): TMission {
+  if (isTerminal(m.state)) return m;
+  const withEntry = appendTimeline(m, { state: 'canceled', at: now });
+  return { ...withEntry, state: 'canceled', cancelReason: 'operator' };
+}
+
+export function evolveMission(m: TMission, evt: MissionEvent, now = Date.now()): TMission {
+  switch (evt.type) {
+    case 'assign':
+      if (m.state === 'created') {
+        const next = appendTimeline(m, { state: 'assigned', at: now });
+        return { ...next, state: 'assigned' };
+      }
+      return m;
+    case 'progress':
+      return m; // implement later
+    case 'complete':
+      if (!isTerminal(m.state)) {
+        const next = appendTimeline(m, { state: 'completed', at: now });
+        return { ...next, state: 'completed' };
+      }
+      return m;
+    case 'cancel':
+      if (!isTerminal(m.state)) {
+        const next = appendTimeline(m, { state: 'canceled', at: now });
+        return { ...next, state: 'canceled', cancelReason: 'operator' };
+      }
+      return m;
+    default:
+      return m;
+  }
+}
+
+// optional - keep if you use it elsewhere
+export function toRobotStatus(state: TMission['state']): 'idle'|'assigned'|'en_route'|'delivering'|'completed' {
+  switch (state) {
+    case 'navigating_to_pickup':
+    case 'at_pickup':
+      return 'en_route';
+    case 'navigating_to_dropoff':
+      return 'delivering';
+    case 'completed':
+      return 'completed';
+    case 'canceled':
+      return 'idle';
+    default:
+      return 'assigned';
+  }
+}
+
+export type LegacyEvent =
+  | 'assign'
+  | 'arrive_at_pickup'
+  | 'arrive_at_dropoff'
+  | 'start_pickup'
+  | 'start_dropoff'
+  | 'complete'
+  | 'cancel';
+
+/** Back-compat wrapper for old tests */
+export function transitionState(m: TMission, evt: LegacyEvent, now = Date.now()): TMission {
+  switch (evt) {
+    case 'assign':
+      return evolveMission(m, { type: 'assign' }, now);
+    case 'complete':
+      return evolveMission(m, { type: 'complete' }, now);
+    case 'cancel':
+      return evolveMission(m, { type: 'cancel' }, now);
+    // Map all other legacy steps to a generic progress tick
+    default:
+      return evolveMission(m, { type: 'progress' }, now);
+  }
+}

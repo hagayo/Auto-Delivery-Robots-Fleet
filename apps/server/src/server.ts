@@ -1,29 +1,31 @@
+import Fastify from 'fastify';
 import cors from '@fastify/cors';
-import { EngineStore, WallClock, MissionGenerator } from '@fleetops/sim-engine';
-import Fastify, { type FastifyInstance } from 'fastify';
 import { FastifySSEPlugin } from 'fastify-sse-v2';
+import { EngineStore, WallClock, MissionGenerator } from '@fleetops/sim-engine';
+import { httpPlugin } from './http.js';
+// import { registerHttp } from './http.js';
 
-import { registerHttp } from './http.js';
+export function buildServer() {
+  const app = Fastify();
 
-export interface AppCtx {
-  app: FastifyInstance;
-  store: EngineStore;
-  clock: WallClock;
-  gen: MissionGenerator;
-}
-
-export function buildServer(): AppCtx {
-  const app = Fastify({ logger: false });
-
-  // CORS - allow Vite dev on different origin
-  app.register(cors, { origin: true }); // tune later for prod :contentReference[oaicite:3]{index=3}
-  app.register(FastifySSEPlugin); // adds reply.sse(...) helpers :contentReference[oaicite:4]{index=4}
+  // register plugins synchronously; Fastify loads them on .ready()/.listen()
+  app.register(cors);
+  app.register(FastifySSEPlugin);
 
   const store = new EngineStore();
   const clock = new WallClock({ intervalMs: 1000 });
   const gen = new MissionGenerator(clock, store, { ratePerMinute: 2 });
 
-  registerHttp(app, store);
+  // register routes
+  // registerHttp(app, store);
+  app.register(httpPlugin, { store });
 
   return { app, store, clock, gen };
+}
+
+if (process.env.NODE_ENV !== 'test') {
+  const { app } = buildServer();
+  app.listen({ port: 3000, host: '0.0.0.0' })
+    .then(addr => console.log(`Server on ${addr}`))
+    .catch(err => { console.error(err); process.exit(1); });
 }

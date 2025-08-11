@@ -1,0 +1,39 @@
+﻿// import type { TMission, MissionTimelineEntry } from './types.js';
+import type { TMission } from './types.js';
+
+export function isTerminal(state: TMission['state']): boolean {
+  return state === 'completed' || state === 'canceled' || state === 'aborting';
+}
+
+function appendTimeline(m: TMission, entry: TMission['timeline'][number]): TMission {
+  return { ...m, timeline: [...m.timeline, entry] };
+}
+
+export function cancelMission(m: TMission, now: number): TMission {
+  if (isTerminal(m.state)) return m;
+  const withEntry = appendTimeline(m, { state: 'canceled', at: now });
+  return { ...withEntry, state: 'canceled', cancelReason: 'operator' };
+}
+
+export function toRobotStatus(state: TMission['state']): 'idle'|'assigned'|'en_route'|'delivering'|'completed' {
+  switch (state) {
+    case 'navigating_to_pickup':
+    case 'at_pickup':
+      return 'en_route';
+    case 'navigating_to_dropoff':
+      return 'delivering';
+    case 'completed':
+      return 'completed';
+    case 'canceled':
+      return 'idle';
+    default:
+      return 'assigned';
+  }
+}
+
+export function evolveMission(m: TMission, state: TMission['state']): TMission {
+  return m;
+}
+// export function evolveMission(m: TMission, _now: number): TMission {
+  // return m; // minimal no-op to satisfy build; refine later if needed
+// }
