@@ -1,9 +1,17 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "outDir": "./dist",
-    "noEmit": false
+    "rootDir": "./src",
+    "noEmit": false,
+    "skipLibCheck": true,
+    "composite": true,
+    "baseUrl": ".",
+    "paths": { "@fleetops/sim-engine": ["../../packages/sim-engine/dist/index.d.ts"] }
   },
+  "references": [{ "path": "../../packages/sim-engine" }],
   "include": ["src"],
   "exclude": ["test", "**/*.spec.ts", "**/*.test.ts"]
 }

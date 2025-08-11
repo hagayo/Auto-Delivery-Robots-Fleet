@@ -1,0 +1,7 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/sim-engine" },
+    { "path": "apps/server" }
+  ]
+}
